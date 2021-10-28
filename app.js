@@ -19,7 +19,7 @@ const renderCountry = function (data, className = '') {
   countriesContainer.style.opacity = 1;
 };
 
-const getCountryAndNeighbour = function (country) {
+const getCountryAndNeighbour = async function (country) {
   // const request = new XMLHttpRequest();
 
   // request.open('GET', `https://restcountries.com/v3.1/name/${country}`);
@@ -46,18 +46,36 @@ const getCountryAndNeighbour = function (country) {
   //   });
   // });
 
-  fetch(`https://restcountries.com/v3.1/name/${country}`)
-    .then((response) => response.json())
-    .then((data) => {
-      renderCountry(data[0]);
-      const neighbour = data[0].borders[0];
-      return fetch(`https://restcountries.com/v3.1/alpha/${neighbour}`);
-    })
-    .then((response) => response.json())
-    .then((data) => renderCountry(data[0], 'neighbour'))
-    .catch((error) => {
-      console.log(error);
-    });
+  // fetch(`https://restcountries.com/v3.1/name/${country}`)
+  //   .then((response) => response.json())
+  //   .then((data) => {
+  //     renderCountry(data[0]);
+  //     const neighbour = data[0].borders[0];
+  //     return fetch(`https://restcountries.com/v3.1/alpha/${neighbour}`);
+  //   })
+  //   .then((response) => response.json())
+  //   .then((data) => renderCountry(data[0], 'neighbour'))
+  //   .catch((error) => {
+  //     console.log(error);
+  //   });
+
+  try {
+    const response = await fetch(
+      `https://restcountries.com/v3.1/name/${country}`
+    );
+    const data = await response.json();
+    renderCountry(data[0]);
+
+    const neighbour = data[0].borders[0];
+
+    const resNeighbour = await fetch(
+      `https://restcountries.com/v3.1/alpha/${neighbour}`
+    );
+    const data1 = await resNeighbour.json();
+    renderCountry(data1[0], 'neighbour');
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 getCountryAndNeighbour('np');
