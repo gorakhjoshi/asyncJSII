@@ -3,7 +3,7 @@ const countriesContainer = document.querySelector('.countries');
 const renderCountry = function (data, className = '') {
   const html = `
       <article class="country ${className}">
-        <img class="country__img" src="" />
+        <img class="country__img" src="${data.flags[0]}" />
         <div class="country__data">
           <h3 class="country__name">Name</h3>
           <h4 class="country__region">${data.region}</h4>
@@ -45,12 +45,22 @@ const getCountryAndNeighbour = function (country) {
   //     renderCountry(data2, 'neighbour');
   //   });
   // });
+
   fetch(`https://restcountries.com/v3.1/name/${country}`)
     .then((response) => response.json())
-    .then((data) => console.log(data));
+    .then((data) => {
+      renderCountry(data[0]);
+      const neighbour = data[0].borders[0];
+      return fetch(`https://restcountries.com/v3.1/alpha/${neighbour}`);
+    })
+    .then((response) => response.json())
+    .then((data) => renderCountry(data[0], 'neighbour'))
+    .catch((error) => {
+      console.log(error);
+    });
 };
 
-getCountryAndNeighbour('nepal');
+getCountryAndNeighbour('np');
 // getCountryAndNeighbour('usa');
 // getCountryAndNeighbour('russia');
 // getCountryAndNeighbour('india');
